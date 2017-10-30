@@ -15,6 +15,7 @@
 
  let speechOutput;
  let reprompt;
+ const SKILL_NAME = 'La Pulguita Get Products';
  const welcomeOutput = "Let's go shopping. ";
  const welcomeReprompt = "Let me know what you'd like to buy";
  const tripIntro = [
@@ -22,9 +23,6 @@
    "This will be fun. ",
    "Oh, I like this. "
  ];
-
-
-
  // 2. Skill Code =======================================================================================================
 
 'use strict';
@@ -42,10 +40,13 @@ const handlers = {
            messages += welcomeReprompt;
 
            this.response.speak(welcomeOutput).listen(messages);
+           this.response.cardRenderer(SKILL_NAME, messages);
            this.emit(':responseReady');
         })
         .catch(err => {
-          this.response.speak("Something happended. Please try again later!");
+          let message = "Something happended. Please try again later!";
+          this.response.speak(message);
+          this.response.cardRenderer(SKILL_NAME, message);
           this.emit(':responseReady');
         });
     },
@@ -62,9 +63,22 @@ const handlers = {
         var product = this.event.request.intent.slots.product.value;
         speechOutput += product;
 
-        //say the results
-        this.response.speak(speechOutput);
-        this.emit(":responseReady");
+        Pulguita.makeOrder(product)
+          .then(res => {
+            //say the results
+            speechOutput += ". Your order has been created!";
+            this.response.speak(speechOutput);
+            this.response.cardRenderer(SKILL_NAME, speechOutput);
+
+            this.emit(":responseReady");
+          })
+          .catch(err => {
+            //say the results
+            let message = err.message ? err.message : err;
+            this.response.speak(message);
+            this.response.cardRenderer(SKILL_NAME, message);
+            this.emit(":responseReady");
+          });
     },
     'AMAZON.HelpIntent': function () {
         speechOutput = "";

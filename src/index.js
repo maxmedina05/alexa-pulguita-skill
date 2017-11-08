@@ -15,7 +15,7 @@
 
  let speechOutput;
  let reprompt;
- const SKILL_NAME = 'La Pulguita Get Products';
+ const SKILL_NAME = 'La Pulguita';
  const welcomeOutput = "Let's go shopping. ";
  const welcomeReprompt = "Let me know what you'd like to buy";
  const tripIntro = [
